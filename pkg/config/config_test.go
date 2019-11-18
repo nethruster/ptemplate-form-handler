@@ -8,6 +8,7 @@ import (
 
 const configPath = "../../examples/config.json"
 
+// TODO redo test
 func TestLoadConfig(t *testing.T) {
 	senders, err := config.LoadConfig(configPath)
 	if err != nil {

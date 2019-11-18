@@ -11,6 +11,7 @@ func TestMail_lfToBr(t *testing.T) {
 	}
 }
 
+//TODO redo tests
 func TestMail_createMessage(t *testing.T) {
 	testMail := Mail{
 		URL:             "mywebsite.com",

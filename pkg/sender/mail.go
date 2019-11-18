@@ -8,15 +8,15 @@ import (
 	"strings"
 )
 
-// Mail represents a type that implements the Sender interface that send forms via SMTP
+// Mail represents a type that send forms via SMTP
 type Mail struct {
-	URL             string `json:"url"`
-	RecaptchaSecret string `json:"recaptcha-secret"`
-	Mailto          string `json:"mailto"`
-	Username        string `json:"username"`
-	Password        string `json:"password"`
-	Hostname        string `json:"hostname"`
-	Port            string `json:"port"`
+	WebName         string
+	RecaptchaSecret string
+	Mailto          string
+	Username        string
+	Password        string
+	Hostname        string
+	Port            string
 }
 
 // CheckRecaptcha will check if the ReCaptcha response provided have passed the ReCaptcha verification using its
@@ -55,7 +55,7 @@ func (sm *Mail) createMessage(name, mail, msg string) []byte {
 			"</body></html>\r\n",
 		sm.Username,
 		sm.Mailto,
-		sm.URL,
+		sm.WebName,
 		html.EscapeString(name),
 		html.EscapeString(mail),
 		lfToBr(html.EscapeString(msg)),

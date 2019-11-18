@@ -16,29 +16,24 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
-	"sync"
-	"time"
 )
 
 const statusUnknownError = 502
 
 var (
-	Log        *logolang.Logger
-	sites      map[uint64]sender.Sender
-
-	closing    = false
-	requestsWG = &sync.WaitGroup{}
+	Log *logolang.Logger
+	s *sender.Mail
 )
 
 // Run will start a HTTP server in the port provided using the config file path provided.
 // It ends when a termination or interrupt signal is received.
 // It can end the program execution prematurely.
 func Run(configFile, port string) {
+	// Load config
 	var err error
-	sites, err = config.LoadConfig(configFile)
+	s, err = config.LoadConfig(configFile)
 	if err != nil {
-		Log.Criticalf("error loading config file: %s", err)
+		Log.Criticalf("error loading config file from path \"%s\": %s", configFile, err)
 		os.Exit(1)
 	}
 
@@ -46,14 +41,11 @@ func Run(configFile, port string) {
 	srv := http.Server{Addr: ":" + port}
 
 	go func() {
-		quit := make(chan os.Signal, 2)
-		signal.Notify(quit, quitSignals...)
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, os.Interrupt)
 		<-quit // Block until quit signal is received
 
 		Log.Info("Shutting down")
-
-		closing = true
-		requestsWG.Wait()
 
 		if err := srv.Shutdown(context.Background()); err != nil {
 			Log.Criticalf("error while shutting down: %s", err)
@@ -61,8 +53,9 @@ func Run(configFile, port string) {
 		}
 	}()
 
-	Log.Infof("Listening port %s", srv.Addr[1:])
-	if err = srv.ListenAndServe(); err != http.ErrServerClosed {
+	Log.Infof("Listening to port %s", port)
+	Log.Info("Press CTRL + C to exit")
+	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
 		Log.Criticalf("Unexpected error which closed the server: %s", err)
 		os.Exit(1)
 	}
@@ -71,11 +64,6 @@ func Run(configFile, port string) {
 // handle is the function executed for each HTTP request received by web-msg-handler.
 //
 // It will:
-//
-// - Assign an ID to every request (corresponding to a timestamp of the EPOCH nanosecond when it was received
-// for debugging and logging purposes.
-//
-// - Check if the Sender ID is correct
 //
 // - Check if the HTTP method used is POST
 //
@@ -90,79 +78,54 @@ func Run(configFile, port string) {
 // - Send the message
 func handle(w http.ResponseWriter, r *http.Request) {
 	// Request ID for logging purposes
-	requestID := time.Now().UnixNano()
-	Log.Debugf("[Request %d] Received: %+v", requestID, r)
-
-	// Close request if the closing var is set to true
-	if closing {
-		Log.Debugf("[Request %d] Reject request. Closing server.", requestID)
-		statusWriter(w, http.StatusServiceUnavailable, false, "closing server")
-		return
-	}
-	requestsWG.Add(1) // This is after the closing check because if it's before it could never stop
-	defer requestsWG.Done()
-
-	url := r.URL
-	id, err := strconv.ParseUint(url.Path[1:], 10, 64)
-	if err != nil {
-		Log.Debugf("[Request %d] Failed to parse ID: %s", requestID, url.Path[1:])
-		statusWriter(w, http.StatusNotFound, false, fmt.Sprintf("path %s not found", url))
-		return
-	}
-
-	s, senderExists := sites[id]
-	if !senderExists {
-		Log.Debugf("[Request %d] ID not found: %d", requestID, id)
-		statusWriter(w, http.StatusNotFound, false, fmt.Sprintf("path %s not found", url))
-		return
-	}
+	Log.Debug("Request received")
 
 	if method := r.Method; method != http.MethodPost {
-		Log.Debugf("[Request %d] Invalid method: %s", requestID, method)
+		Log.Errorf("Invalid method: %s", method)
 		statusWriter(w, http.StatusMethodNotAllowed, false, fmt.Sprintf("method %s not supported", method))
 		return
 	}
 
 	if contentType := r.Header.Get(pkg.MimeContentType); contentType != pkg.MimeJSON {
-		Log.Debugf("[Request %d] Invalid content type: %s", requestID, contentType)
+		Log.Errorf("Invalid content type: %s", contentType)
 		statusWriter(w, http.StatusBadRequest, false, fmt.Sprintf("content-type %s not supported", contentType))
 		return
 	}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		Log.Errorf("[Request %d] Error while reading body: %s", requestID, err)
+		Log.Errorf("Error while reading body: %s", err)
 		statusWriter(w, statusUnknownError, false, fmt.Sprintf("unknown error while reading request body: %s", err.Error()))
 		return
 	}
 
 	var r2 api.Request
 	if err = json.Unmarshal(body, &r2); err != nil {
-		Log.Debugf("[Request %d] Malformed JSON: %s", requestID, err)
+		Log.Errorf("Malformed JSON: %s", err)
 		statusWriter(w, http.StatusBadRequest, false, "malformed JSON")
 		return
 	}
 
 	if !sanitation.IsValidMail(r2.Mail) {
-		Log.Debugf("[Request %d] Invalid email", requestID)
+		Log.Error("Invalid email")
 		statusWriter(w, http.StatusBadRequest, false, "invalid email")
 		return
 	}
 
 	if err = s.CheckRecaptcha(r2.Recaptcha); err != nil {
-		Log.Debugf("[Request %d] Recaptcha verification failed: %s", requestID, err)
+		Log.Errorf("Recaptcha verification failed: %s", err)
 		statusWriter(w, http.StatusBadRequest, false, "recaptcha verification failed")
 		return
 	}
 
 	if err = s.Send(sanitation.SanitizeName(r2.Name), r2.Mail, sanitation.SanitizeMsg(r2.Msg)); err != nil {
-		Log.Debugf("[Request %d] Sender failed: %s", requestID, err)
+		Log.Errorf("Sender failed: %s", err)
 		statusWriter(w, http.StatusServiceUnavailable, false, "error sending message")
 		return
 	}
 
 	statusWriter(w, http.StatusOK, true, "")
-	Log.Debugf("[Request %d] Success", requestID)
+	Log.Debug("Success")
 }
 
 // statusWriter will write a response to the http.ResponseWriter provided.

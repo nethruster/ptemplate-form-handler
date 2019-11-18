@@ -1,0 +1,9 @@
+web_name = "ptemplate.nethruster.com"
+recaptcha_secret = "xkmBhVrYaB0NhtHpHgAWeTnLZpTSxCKs0gigByk5"
+
+[mail]
+mailto = "personal@gmail.com"
+username = "no-reply@nethruster.com"
+password = "bNRxxIPxX7kLrbN8WCG22VUmpBqVBGgLTnyLdjob"
+smtp_server = "smtp.nethruster.com"
+port = 587
