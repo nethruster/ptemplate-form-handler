@@ -3,6 +3,7 @@ package config
 // Package config is the package that manages the functions related to the config file of ptemplate-form-handler.
 
 import (
+	"errors"
 	"fmt"
 	"github.com/Miguel-Dorta/web-msg-handler/pkg/sender"
 	"github.com/pelletier/go-toml"
@@ -35,9 +36,8 @@ func LoadConfig(path string) (*sender.Mail, error) {
 		return nil, fmt.Errorf("error parsing config file from path \"%s\": %w", path, err)
 	}
 
-	// Check valid port
-	if c.Mail.Port < 0 || c.Mail.Port > 65535 {
-		return nil, fmt.Errorf("invalid port: %d", c.Mail.Port)
+	if err = checkValidInput(&c); err != nil {
+		return nil, fmt.Errorf("invalid configuration file: %w", err)
 	}
 
 	return &sender.Mail{
@@ -49,4 +49,30 @@ func LoadConfig(path string) (*sender.Mail, error) {
 		Hostname:        c.Mail.SmtpServer,
 		Port:            strconv.Itoa(c.Mail.Port),
 	}, nil
+}
+
+// checkValidInput checks if all the fields in the config provided are valid
+func checkValidInput(c *config) error {
+	if c.WebName == "" {
+		return errors.New("empty web_name")
+	}
+	if c.RecaptchaSecret == "" {
+		return errors.New("empty recaptcha_secret")
+	}
+	if c.Mail.Mailto == "" {
+		return errors.New("empty mailto")
+	}
+	if c.Mail.Username == "" {
+		return errors.New("empty username")
+	}
+	if c.Mail.Password == "" {
+		return errors.New("empty password")
+	}
+	if c.Mail.SmtpServer == "" {
+		return errors.New("empty smtp_server")
+	}
+	if c.Mail.Port < 1 || c.Mail.Port > 65535 {
+		return errors.New("invalid port")
+	}
+	return nil
 }

@@ -1,131 +1,123 @@
-package config_test
+package config
 
 import (
-	"github.com/Miguel-Dorta/web-msg-handler/pkg/config"
-	"github.com/Miguel-Dorta/web-msg-handler/pkg/sender"
+	"fmt"
+	"strconv"
 	"testing"
 )
 
-const configPath = "../../examples/config.json"
-
-// TODO redo test
 func TestLoadConfig(t *testing.T) {
-	senders, err := config.LoadConfig(configPath)
+	checkValid("testdata/valid.toml", config{
+		WebName:         "ptemplate.nethruster.com",
+		RecaptchaSecret: "xkmBhVrYaB0NhtHpHgAWeTnLZpTSxCKs0gigByk5",
+		Mail: struct {
+			Mailto     string `toml:"mailto"`
+			Username   string `toml:"username"`
+			Password   string `toml:"password"`
+			SmtpServer string `toml:"smtp_server"`
+			Port       int    `toml:"port"`
+		}{
+			Mailto: "personal@gmail.com",
+			Username: "no-reply@nethruster.com",
+			Password: "bNRxxIPxX7kLrbN8WCG22VUmpBqVBGgLTnyLdjob",
+			SmtpServer: "smtp.nethruster.com",
+			Port: 587,
+		},
+	}, t)
+
+	checkValid("testdata/extra-info.toml", config{
+		WebName:         "ptemplate.nethruster.com",
+		RecaptchaSecret: "xkmBhVrYaB0NhtHpHgAWeTnLZpTSxCKs0gigByk5",
+		Mail: struct {
+			Mailto     string `toml:"mailto"`
+			Username   string `toml:"username"`
+			Password   string `toml:"password"`
+			SmtpServer string `toml:"smtp_server"`
+			Port       int    `toml:"port"`
+		}{
+			Mailto: "personal@gmail.com",
+			Username: "no-reply@nethruster.com",
+			Password: "bNRxxIPxX7kLrbN8WCG22VUmpBqVBGgLTnyLdjob",
+			SmtpServer: "smtp.nethruster.com",
+			Port: 587,
+		},
+	}, t)
+
+	checkInvalid("testdata/invalid.toml", config{
+		WebName:         "ptemplate.nethruster.com",
+		RecaptchaSecret: "xkmBhVrYaB0NhtHpHgAWeTnLZpTSxCKs0gigByk5",
+		Mail: struct {
+			Mailto     string `toml:"mailto"`
+			Username   string `toml:"username"`
+			Password   string `toml:"password"`
+			SmtpServer string `toml:"smtp_server"`
+			Port       int    `toml:"port"`
+		}{
+			Mailto: "personal@gmail.com",
+			Username: "no-reply@nethruster.com",
+			Password: "bNRxxIPxX7kLrbN8WCG22VUmpBqVBGgLTnyLdjob",
+			SmtpServer: "smtp.nethruster.com",
+			Port: 832429423,
+		},
+	}, t)
+
+	checkInvalid("testdata/incomplete.toml", config{
+		RecaptchaSecret: "xkmBhVrYaB0NhtHpHgAWeTnLZpTSxCKs0gigByk5",
+		Mail: struct {
+			Mailto     string `toml:"mailto"`
+			Username   string `toml:"username"`
+			Password   string `toml:"password"`
+			SmtpServer string `toml:"smtp_server"`
+			Port       int    `toml:"port"`
+		}{
+			Password: "bNRxxIPxX7kLrbN8WCG22VUmpBqVBGgLTnyLdjob",
+			SmtpServer: "smtp.nethruster.com",
+		},
+	}, t)
+
+	checkInvalid("testdata/empty.toml", config{}, t)
+	checkInvalid("testdata/nonexistent.toml", config{}, t)
+}
+
+func checkValid(path string, expectedConfig config, t *testing.T) {
+	if err := testConfig(path, expectedConfig); err != nil {
+		t.Errorf("unexpected error in path %s: %s", path, err)
+	}
+}
+
+func checkInvalid(path string, expectedConfig config, t *testing.T) {
+	if err := testConfig(path, expectedConfig); err == nil {
+		t.Errorf("not error found in path %s", path)
+	}
+}
+
+func testConfig(path string, expectedConfig config) error {
+	actualConfig, err := LoadConfig(path)
 	if err != nil {
-		t.Fatalf("execution error of LoadConfig: %s", err)
+		return err
 	}
 
-	if len(senders) != 4 {
-		t.Error("not all senders read")
+	if actualConfig.WebName != expectedConfig.WebName {
+		return fmt.Errorf("web_name dont match: expected (%s) - found (%s)", expectedConfig.WebName, actualConfig.WebName)
+	}
+	if actualConfig.RecaptchaSecret != expectedConfig.RecaptchaSecret {
+		return fmt.Errorf("recaptcha secret dont match: expected (%s) - found (%s)", expectedConfig.RecaptchaSecret, actualConfig.RecaptchaSecret)
+	}
+	if actualConfig.Mailto != expectedConfig.Mail.Mailto {
+		return fmt.Errorf("mailto dont match: expected (%s) - found (%s)", expectedConfig.Mail.Mailto, actualConfig.Mailto)
+	}
+	if actualConfig.Username != expectedConfig.Mail.Username {
+		return fmt.Errorf("username dont match: expected (%s) - found (%s)", expectedConfig.Mail.Username, actualConfig.Username)
+	}
+	if actualConfig.Password != expectedConfig.Mail.Password {
+		return fmt.Errorf("password dont match: expected (%s) - found (%s)", expectedConfig.Mail.Password, actualConfig.Password)
+	}
+	if actualConfig.Hostname != expectedConfig.Mail.SmtpServer {
+		return fmt.Errorf("server dont match: expected (%s) - found (%s)", expectedConfig.Mail.SmtpServer, actualConfig.Hostname)
+	}
+	if actualConfig.Port != strconv.Itoa(expectedConfig.Mail.Port) {
+		return fmt.Errorf("port dont match: expected (%d) - found (%s)", expectedConfig.Mail.Port, actualConfig.Port)
 	}
 
-	sender1, exists := senders[5577006791947779410]
-	if !exists {
-		t.Error("Sender with ID 5577006791947779410 not found")
-	} else {
-		sender1telegram, ok := sender1.(*sender.Telegram)
-		if !ok {
-			t.Error("Sender with ID 5577006791947779410 cannot be parsed as Telegram Sender")
-		} else {
-			if sender1telegram.URL != "website1.com" {
-				t.Errorf("URL don't match: found %s", sender1telegram.URL)
-			}
-			if sender1telegram.RecaptchaSecret != "Uv38ByGCZU8WP18PmmIdcpVmx00QA3xNe7sEB9Hi" {
-				t.Errorf("RecaptchaSecret don't match: found %s", sender1telegram.RecaptchaSecret)
-			}
-			if sender1telegram.ChatId != "9167320" {
-				t.Errorf("ChatId don't match: found %s", sender1telegram.ChatId)
-			}
-			if sender1telegram.BotToken != "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11" {
-				t.Errorf("BotToken don't match: found %s", sender1telegram.BotToken)
-			}
-		}
-	}
-
-	sender2, exists := senders[15352856648520921629]
-	if !exists {
-		t.Error("Sender with ID 15352856648520921629 not found")
-	} else {
-		sender2telegram, ok := sender2.(*sender.Telegram)
-		if !ok {
-			t.Error("Sender with ID 15352856648520921629 cannot be parsed as Telegram Sender")
-		} else {
-			if sender2telegram.URL != "website2.org" {
-				t.Errorf("URL don't match: found %s", sender2telegram.URL)
-			}
-			if sender2telegram.RecaptchaSecret != "xkmBhVrYaB0NhtHpHgAWeTnLZpTSxCKs0gigByk5" {
-				t.Errorf("RecaptchaSecret don't match: found %s", sender2telegram.RecaptchaSecret)
-			}
-			if sender2telegram.ChatId != "87745566" {
-				t.Errorf("ChatId don't match: found %s", sender2telegram.ChatId)
-			}
-			if sender2telegram.BotToken != "654321:ABC-DEF1234ghIkl-zyx57W2v1u123ew12" {
-				t.Errorf("BotToken don't match: found %s", sender2telegram.BotToken)
-			}
-		}
-	}
-
-	sender3, exists := senders[8674665223082153551]
-	if !exists {
-		t.Error("Sender with ID 8674665223082153551 not found")
-	} else {
-		sender3mail, ok := sender3.(*sender.Mail)
-		if !ok {
-			t.Error("Sender with ID 8674665223082153551 cannot be parsed as Mail Sender")
-		} else {
-			if sender3mail.URL != "website3.com" {
-				t.Errorf("URL don't match: found %s", sender3mail.URL)
-			}
-			if sender3mail.RecaptchaSecret != "SH9pmeudGKRHhARdh_PGfPInRumVr1olNnlRuqL_" {
-				t.Errorf("RecaptchaSecret don't match: found %s", sender3mail.RecaptchaSecret)
-			}
-			if sender3mail.Mailto != "contact@website3.com" {
-				t.Errorf("Mailto don't match: found %s", sender3mail.Mailto)
-			}
-			if sender3mail.Username != "no-reply@website3.com" {
-				t.Errorf("Username don't match: found %s", sender3mail.Username)
-			}
-			if sender3mail.Password != "bNRxxIPxX7kLrbN8WCG22VUmpBqVBGgLTnyLdjob" {
-				t.Errorf("Password don't match: found %s", sender3mail.Password)
-			}
-			if sender3mail.Hostname != "smtp.website3.com" {
-				t.Errorf("Hostname don't match: found %s", sender3mail.Hostname)
-			}
-			if sender3mail.Port != "587" {
-				t.Errorf("Port don't match: found %s", sender3mail.Port)
-			}
-		}
-	}
-
-	sender4, exists := senders[13260572831089785859]
-	if !exists {
-		t.Error("Sender with ID 13260572831089785859 not found")
-	} else {
-		sender4mail, ok := sender4.(*sender.Mail)
-		if !ok {
-			t.Error("Sender with ID 13260572831089785859 cannot be parsed as Mail Sender")
-		} else {
-			if sender4mail.URL != "website4.net" {
-				t.Errorf("URL don't match: found %s", sender4mail.URL)
-			}
-			if sender4mail.RecaptchaSecret != "HUnUlVyEhiFjJSU_7HON16nii_khEZwWDwcCRIYV" {
-				t.Errorf("RecaptchaSecret don't match: found %s", sender4mail.RecaptchaSecret)
-			}
-			if sender4mail.Mailto != "personal-mail@gmail.com" {
-				t.Errorf("Mailto don't match: found %s", sender4mail.Mailto)
-			}
-			if sender4mail.Username != "contact-forms@website4.net" {
-				t.Errorf("Username don't match: found %s", sender4mail.Username)
-			}
-			if sender4mail.Password != "u9oIMT9qjrZo0gv1BZh1kh5milvfLH_EhEWS0lcr" {
-				t.Errorf("Password don't match: found %s", sender4mail.Password)
-			}
-			if sender4mail.Hostname != "mail.website4.net" {
-				t.Errorf("Hostname don't match: found %s", sender4mail.Hostname)
-			}
-			if sender4mail.Port != "25" {
-				t.Errorf("Port don't match: found %s", sender4mail.Port)
-			}
-		}
-	}
+	return nil
 }

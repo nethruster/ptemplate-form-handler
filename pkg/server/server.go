@@ -10,6 +10,7 @@ import (
 	"github.com/Miguel-Dorta/web-msg-handler/api"
 	"github.com/Miguel-Dorta/web-msg-handler/pkg"
 	"github.com/Miguel-Dorta/web-msg-handler/pkg/config"
+	"github.com/Miguel-Dorta/web-msg-handler/pkg/recaptcha"
 	"github.com/Miguel-Dorta/web-msg-handler/pkg/sanitation"
 	"github.com/Miguel-Dorta/web-msg-handler/pkg/sender"
 	"io/ioutil"
@@ -112,7 +113,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = s.CheckRecaptcha(r2.Recaptcha); err != nil {
+	if err = recaptcha.CheckRecaptcha(s.RecaptchaSecret, r2.Recaptcha); err != nil {
 		Log.Errorf("Recaptcha verification failed: %s", err)
 		statusWriter(w, http.StatusBadRequest, false, "recaptcha verification failed")
 		return

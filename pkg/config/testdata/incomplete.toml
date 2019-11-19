@@ -1,0 +1,5 @@
+recaptcha_secret = "xkmBhVrYaB0NhtHpHgAWeTnLZpTSxCKs0gigByk5"
+
+[mail]
+password = "bNRxxIPxX7kLrbN8WCG22VUmpBqVBGgLTnyLdjob"
+smtp_server = "smtp.nethruster.com"

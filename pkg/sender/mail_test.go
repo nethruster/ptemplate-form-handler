@@ -11,10 +11,9 @@ func TestMail_lfToBr(t *testing.T) {
 	}
 }
 
-//TODO redo tests
 func TestMail_createMessage(t *testing.T) {
 	testMail := Mail{
-		URL:             "mywebsite.com",
+		WebName:             "mywebsite.com",
 		RecaptchaSecret: "",
 		Mailto:          "test@mywebsite.com",
 		Username:        "test@mywebsite.com",

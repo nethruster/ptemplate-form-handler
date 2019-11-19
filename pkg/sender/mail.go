@@ -2,7 +2,6 @@ package sender
 
 import (
 	"fmt"
-	"github.com/Miguel-Dorta/web-msg-handler/pkg/recaptcha"
 	"html"
 	"net/smtp"
 	"strings"
@@ -17,12 +16,6 @@ type Mail struct {
 	Password        string
 	Hostname        string
 	Port            string
-}
-
-// CheckRecaptcha will check if the ReCaptcha response provided have passed the ReCaptcha verification using its
-// internal secret.
-func (sm *Mail) CheckRecaptcha(resp string) error {
-	return recaptcha.CheckRecaptcha(sm.RecaptchaSecret, resp)
 }
 
 // Send will send the form provided via SMTP
