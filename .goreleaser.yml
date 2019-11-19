@@ -1,8 +1,8 @@
 env:
   - GO111MODULE=on
 builds:
-  - id: generic
-    main: cmd/ptemplate-form-handler/main.go
+  - id: buildGeneric
+    main: ./cmd/ptemplate-form-handler
     binary: ptemplate-form-handler
     ldflags: -X github.com/Miguel-Dorta/ptemplate-form-handler/internal.Version={{.Version}}
     goos:
@@ -11,8 +11,8 @@ builds:
     goarch:
       - amd64
 
-  - id: linux
-    main: cmd/ptemplate-form-handler/main.go
+  - id: buildLinux
+    main: ./cmd/ptemplate-form-handler
     binary: ptemplate-form-handler
     ldflags: -X github.com/Miguel-Dorta/ptemplate-form-handler/internal.Version={{.Version}}
     goos:
@@ -26,26 +26,25 @@ builds:
       - 5
       - 6
       - 7
+
 archives:
   - id: archiveGeneric
     builds:
-      - generic
+      - buildGeneric
     format: zip
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}"
     replacements:
       darwin: macOS
     files:
-      - examples/config.json
+      - examples/config.toml
       - LICENSE
       - README.md
 
   - id: archiveLinux
     builds:
-      - linux
+      - buildLinux
     format: tar.gz
     files:
-      - configs/systemd/ptemplate-form-handler.service
-      - examples/config.json
-      - install.sh
+      - examples/config.toml
       - LICENSE
       - README.md
