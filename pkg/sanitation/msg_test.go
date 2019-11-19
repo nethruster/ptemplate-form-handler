@@ -1,7 +1,7 @@
 package sanitation_test
 
 import (
-	"github.com/Miguel-Dorta/web-msg-handler/pkg/sanitation"
+	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg/sanitation"
 	"testing"
 )
 

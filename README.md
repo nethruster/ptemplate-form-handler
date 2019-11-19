@@ -1,4 +1,4 @@
-# web-msg-handler
+# ptemplate-form-handler
 An API for handling messages from multiple website contact pages
 
 ## Objective
@@ -10,31 +10,31 @@ Unify multiple web contact forms backends in a single instance, with a simple an
 
 ## Set up
 #### Getting the software
-You can either download a [built release](https://github.com/Miguel-Dorta/web-msg-handler/releases) or compile it yourself (it requires Go 1.13 or above for compilation).
+You can either download a [built release](https://github.com/Miguel-Dorta/ptemplate-form-handler/releases) or compile it yourself (it requires Go 1.13 or above for compilation).
 
 ### Linux manual installation (recommended)
 * Extract the .tar.gz
-* Move the binary (web-msg-handler) to its working directory ("/var/www/web-msg-handler" with owner and group "www-data" recommended).
+* Move the binary (ptemplate-form-handler) to its working directory ("/var/www/ptemplate-form-handler" with owner and group "www-data" recommended).
 * Create a config file. You can see an example in the extracted folder called "examples", or see the specification below.
 * (Recommended) Don't expose it directly to the internet. Set up an nginx-reverse-proxy or similar.
 * (Optional) Create a systemd service config or init config to start it up automatically.
 
 ### Linux automatic installation
-IMPORTANT: the automatic installation will assume you use systemd and will create a working directory in "/var/www/web-msg-handler".
+IMPORTANT: the automatic installation will assume you use systemd and will create a working directory in "/var/www/ptemplate-form-handler".
 * Extract the .tar.gz
 * Run install.sh
-* Create a config file in /var/www/web-msg-handler/config.json. You can see an example in "/var/www/web-msg-handler/config.json.example", or see the specification below.
+* Create a config file in /var/www/ptemplate-form-handler/config.json. You can see an example in "/var/www/ptemplate-form-handler/config.json.example", or see the specification below.
 
 ### Windows
 * Extract the .zip
 * Create a config.json file in the extracted directory (you can find an example in "examples/config.json" or see the specification below).
-* Double click in web-msg-handler.exe to execute it.
+* Double click in ptemplate-form-handler.exe to execute it.
 
 ### MacOS
 * Download the software
 * Create a config file (you can find an example in "examples/config.json" or see the specification below).
 * Open a terminal
-* Execute it (something like `Downloads/web-msg-handler_macOS/web-msg-handler --config <path>`)
+* Execute it (something like `Downloads/ptemplate-form-handler_macOS/ptemplate-form-handler --config <path>`)
 
 #### Run parameters
 ```
@@ -78,7 +78,7 @@ The settings object in the sender "telegram" contains the following fields:
 More information about this [here](https://core.telegram.org/bots)
 
 ## Public API
-The API of web-msg-handler tries to be minimal. It consists only in a request and a response.
+The API of ptemplate-form-handler tries to be minimal. It consists only in a request and a response.
 
 ### Request
 The request must be made to the URL `/<ID>` where `<ID>` is the site ID of the config.json. This request must:
@@ -102,4 +102,4 @@ The response is a JSON that contains the following fields:
 * Implement a modular system of plugins for more types of senders.
 
 ## License
-This software is licensed under MIT License. See [LICENSE](https://github.com/Miguel-Dorta/web-msg-handler/blob/master/LICENSE) for more information.
+This software is licensed under MIT License. See [LICENSE](https://github.com/Miguel-Dorta/ptemplate-form-handler/blob/master/LICENSE) for more information.

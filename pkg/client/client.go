@@ -1,10 +1,10 @@
 package client
-// Package client represents the HTTP client that is used internally by web-msg-handler to make HTTP request.
+// Package client represents the HTTP client that is used internally by ptemplate-form-handler to make HTTP request.
 
 import (
 	"bytes"
 	"fmt"
-	"github.com/Miguel-Dorta/web-msg-handler/pkg"
+	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg"
 	"io/ioutil"
 	"net/http"
 	"time"

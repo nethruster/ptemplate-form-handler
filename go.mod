@@ -1,4 +1,4 @@
-module github.com/Miguel-Dorta/web-msg-handler
+module github.com/Miguel-Dorta/ptemplate-form-handler
 
 require (
 	github.com/Miguel-Dorta/logolang v0.5.1

@@ -1,11 +1,12 @@
 package main
+// TODO redo this in general. Also README.md
 
 import (
 	"flag"
 	"fmt"
 	"github.com/Miguel-Dorta/logolang"
-	"github.com/Miguel-Dorta/web-msg-handler/internal"
-	"github.com/Miguel-Dorta/web-msg-handler/pkg/server"
+	"github.com/Miguel-Dorta/ptemplate-form-handler/internal"
+	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg/server"
 	"os"
 	"strconv"
 )

@@ -1,18 +1,18 @@
 package server
 
-// Package server will manage all the HTTP request made to web-msg-handler.
+// Package server will manage all the HTTP request made to ptemplate-form-handler.
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/Miguel-Dorta/logolang"
-	"github.com/Miguel-Dorta/web-msg-handler/api"
-	"github.com/Miguel-Dorta/web-msg-handler/pkg"
-	"github.com/Miguel-Dorta/web-msg-handler/pkg/config"
-	"github.com/Miguel-Dorta/web-msg-handler/pkg/recaptcha"
-	"github.com/Miguel-Dorta/web-msg-handler/pkg/sanitation"
-	"github.com/Miguel-Dorta/web-msg-handler/pkg/sender"
+	"github.com/Miguel-Dorta/ptemplate-form-handler/api"
+	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg"
+	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg/config"
+	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg/recaptcha"
+	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg/sanitation"
+	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg/sender"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -62,7 +62,7 @@ func Run(configFile, port string) {
 	}
 }
 
-// handle is the function executed for each HTTP request received by web-msg-handler.
+// handle is the function executed for each HTTP request received by ptemplate-form-handler.
 //
 // It will:
 //

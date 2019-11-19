@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Miguel-Dorta/web-msg-handler/pkg/client"
+	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg/client"
 )
 
 const recaptchaVerifyUrl = "https://www.google.com/recaptcha/api/siteverify"
 
-// request represents the request that web-msg-handler do to Google's ReCaptcha servers in order to verify
+// request represents the request that ptemplate-form-handler do to Google's ReCaptcha servers in order to verify
 // whether a request passed the ReCaptcha verification.
 type request struct {
 	Secret string `json:"secret"`
