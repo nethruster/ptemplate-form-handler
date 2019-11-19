@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/Miguel-Dorta/logolang"
-	"github.com/Miguel-Dorta/ptemplate-form-handler/internal"
-	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg/server"
+	"github.com/nethruster/ptemplate-form-handler/internal"
+	"github.com/nethruster/ptemplate-form-handler/pkg/server"
 	"os"
 	"strconv"
 )

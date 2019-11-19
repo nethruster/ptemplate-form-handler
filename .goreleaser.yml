@@ -4,7 +4,7 @@ builds:
   - id: buildGeneric
     main: ./cmd/ptemplate-form-handler
     binary: ptemplate-form-handler
-    ldflags: -X github.com/Miguel-Dorta/ptemplate-form-handler/internal.Version={{.Version}}
+    ldflags: -X github.com/nethruster/ptemplate-form-handler/internal.Version={{.Version}}
     goos:
       - darwin
       - windows
@@ -14,7 +14,7 @@ builds:
   - id: buildLinux
     main: ./cmd/ptemplate-form-handler
     binary: ptemplate-form-handler
-    ldflags: -X github.com/Miguel-Dorta/ptemplate-form-handler/internal.Version={{.Version}}
+    ldflags: -X github.com/nethruster/ptemplate-form-handler/internal.Version={{.Version}}
     goos:
       - linux
     goarch:

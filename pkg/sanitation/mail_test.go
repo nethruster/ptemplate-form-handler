@@ -1,7 +1,7 @@
 package sanitation_test
 
 import (
-	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg/sanitation"
+	"github.com/nethruster/ptemplate-form-handler/pkg/sanitation"
 	"testing"
 )
 

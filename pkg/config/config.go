@@ -5,7 +5,7 @@ package config
 import (
 	"errors"
 	"fmt"
-	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg/sender"
+	"github.com/nethruster/ptemplate-form-handler/pkg/sender"
 	"github.com/pelletier/go-toml"
 	"io/ioutil"
 	"strconv"

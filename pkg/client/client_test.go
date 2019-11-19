@@ -3,8 +3,8 @@ package client_test
 import (
 	"context"
 	"fmt"
-	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg"
-	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg/client"
+	"github.com/nethruster/ptemplate-form-handler/pkg"
+	"github.com/nethruster/ptemplate-form-handler/pkg/client"
 	"golang.org/x/sys/unix"
 	"io/ioutil"
 	"net/http"

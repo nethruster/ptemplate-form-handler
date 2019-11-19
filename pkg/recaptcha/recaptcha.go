@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg/client"
+	"github.com/nethruster/ptemplate-form-handler/pkg/client"
 )
 
 const recaptchaVerifyUrl = "https://www.google.com/recaptcha/api/siteverify"

@@ -4,7 +4,7 @@ package client
 import (
 	"bytes"
 	"fmt"
-	"github.com/Miguel-Dorta/ptemplate-form-handler/pkg"
+	"github.com/nethruster/ptemplate-form-handler/pkg"
 	"io/ioutil"
 	"net/http"
 	"time"

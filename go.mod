@@ -1,4 +1,4 @@
-module github.com/Miguel-Dorta/ptemplate-form-handler
+module github.com/nethruster/ptemplate-form-handler
 
 go 1.13
 
